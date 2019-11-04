@@ -6,8 +6,6 @@ library(MASS)
 
 
 dataset <- read.table('/home/asta/Documents/Multivariables/mult3.txt')
-print(dataset)
-
 
 calculate_ratio_ss<-function(res, data_tmp=dataset){
   within_ss<-res$tot.withinss
@@ -23,7 +21,7 @@ plot_by_method<-function(method, data_tmp=dataset){
   fviz_nbclust(data_tmp, method, method = "silhouette",k.max = 20)
 }
 
-prin_comp_plot(res, which_comp, data_tmp=dataset){
+prin_comp_plot<-function(res, which_comp, data_tmp=dataset){
   pal<-c("black","red","blue","green","magenta","chocolate", "darkblue","darkred","aquamarine","grey")
   plot(princomp(data_tmp)$scores[,which_comp],col=pal[res$cluster],cex=0.2)
 }
@@ -38,29 +36,28 @@ canon_comp_plot=function(res_cluster, data_tmp=dataset){
 }
 
 
+#for kmeans
+plot_by_method(kmeans)
+k_kmean_best = c(3, 7, 13)
+for (k in k_kmean_best){
+  km.res <- kmeans(dataset, k, nstart = 25)
+  calculate_ratio_ss(km.res, dataset)
+  prin_comp_plot(km.res, 2:3)
+}
 
-
-
-
-km.res <- kmeans(dataset, 12, nstart = 25)
-calculate_ratio_ss(km.res, dataset)
-
-
-k_best = c(3, 7, 13)
-
-#for all k_best
-km.res <- kmeans(dataset, 13, nstart = 25)
-pal<-c("black","red","blue","green","magenta","chocolate", "darkblue","darkred","aquamarine","grey")
-plot(princomp(dataset)$scores[,2:3],col=pal[km.res$cluster],cex=0.2)
-
-cl<-km.res$cluster
-k_tmp<-length(levels(as.factor(cl)))
-C_matrix<-matrix(data=as.numeric(rep(cl,k_tmp)==rep(1:k_tmp, each=n)), ncol = k_tmp, nrow = n)
-cc_res<-rcc(dataset, C_matrix, 0.1, 0.1)
-plot(cc_res$scores$xscores[,2:3],col=pal[km.res$cluster],cex=0.2)
 
 pam.res<-pam(dataset, 13)
 
+plot_by_method(pam)
+
+
+
+k_pam_best = c(3, 7, 13)
+for (k in k_pam_best){
+  pam.res <- pam(dataset, k)
+  calculate_ratio_ss(pam.res, dataset)
+  #prin_comp_plot(pam.res$clustering, 2:3)
+}
 
 
 
