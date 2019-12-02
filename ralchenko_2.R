@@ -1,7 +1,4 @@
 library(MASS)
-library(rgl)
-library(kernlab)
-
 
 Wien = function(num, delta){
   rn<-rnorm(n=num - 1, m=0, sd=1)
@@ -47,15 +44,15 @@ Taylor_estimator = function(delta, w, t){
 }
 
 x0 = 2
-t1 = c(1, 5,  10, 20)
+t1 = c(1, 5, 10, 15, 20)
 t_0 = 0
 t_max = max(t1)
-deltas = c(2**(-3), 2**(-4), 2**(-5)) #-4, -5
+deltas = c(2**(-3), 2**(-4), 2**(-5))
 X_real = function(t, w) x0*exp(-1.845*t -1.3*w)
 a = function(t, x) (-x)
 b = function(t, x) (-1.3*x)
 da_dx = function(t, x) (-1)
-db_dx = function(t, x) (1.3)
+db_dx = function(t, x) (-1.3)
 
 mae_t1_euler = matrix(nrow = length(deltas), ncol = length(t1))
 mae_t1_milstein = matrix(nrow = length(deltas), ncol = length(t1))
@@ -88,19 +85,27 @@ for (d in 1:length(deltas))
   
 }
 
-matplot(t1, t(mae_t1_euler), type = 'l', col = c(2:4), main = "Euler method", xlab = "time", ylab = "")
+matplot(t1, log(t(mae_t1_euler)), type = 'l', col = c(2:4), main = "Euler method", xlab = "time", ylab = "log(mae)")
 legend("topright", legend = deltas, lty = c(1:3), col = c(2:4))
 
-matplot(t1, t(mae_t1_milstein), type = 'l', col = c(2:4), main = "Milstein method", xlab = "time", ylab = "")
+matplot(t1, log(t(mae_t1_milstein)), type = 'l', col = c(2:4), main = "Milstein method", xlab = "time", ylab = "log(mae)")
 legend("topright", legend = deltas, lty = c(1:3), col = c(2:4))
 
-matplot(t1, t(mae_t1_taylor), type = 'l', col = c(2:4), main = "Tayler method", xlab = "time", ylab = "")
+matplot(t1, log(t(mae_t1_taylor)), type = 'l', col = c(2:4), main = "Tayler method", xlab = "time", ylab = "log(mae)")
 legend("topright", legend = deltas, lty = c(1:3), col = c(2:4))
+
+matrix_compare_methods = matrix(nrow = length(deltas), ncol = 3)
+matrix_compare_methods[,1] = mae_t1_euler[,2]
+matrix_compare_methods[,2] = mae_t1_milstein[,2]
+matrix_compare_methods[,3] = mae_t1_taylor[,2]
+
+matplot(deltas, log(matrix_compare_methods), type = 'l', col = c(2:5), main = "Compare methods for fixed time = 5", xlab = "delta", ylab = "")
+legend("topright", legend = c("Euler", "Milstein", "Taylor 1.5"), lty = c(1:3), col = c(2:4))
 
 matrix_compare_methods = matrix(nrow = 3, ncol = length(t1))
-matrix_compare_methods[1, ] = mae_t1_euler[2,]
-matrix_compare_methods[2, ] = mae_t1_milstein[2,]
-matrix_compare_methods[3, ] = mae_t1_taylor[2,]
+matrix_compare_methods[1,] = mae_t1_euler[2,]
+matrix_compare_methods[2,] = mae_t1_milstein[2,]
+matrix_compare_methods[3,] = mae_t1_taylor[2,]
 
-matplot(t1, (t(matrix_compare_methods)), type = 'l', col = c(2:4), main = "Compare methods", xlab = "time", ylab = "")
+matplot(t1, log(t(matrix_compare_methods)), type = 'l', col = c(2:5), main = "Compare methods for fixed delta = 2^(-4)", xlab = "time", ylab = "log(mae)")
 legend("topright", legend = c("Euler", "Milstein", "Taylor 1.5"), lty = c(1:3), col = c(2:4))

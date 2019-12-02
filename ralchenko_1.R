@@ -15,7 +15,7 @@ Euler_est = function(delta, t_max, t_0=0){
 }
 
 x0 = -2.5
-delta = 0.001 #0.001
+delta = 0.01 #0.001
 a = function(t, x) atan(2 + x*t)
 b = function(t, x) log(1 + t + x*x)
 t = seq(0, 1, by = delta)                    
@@ -25,4 +25,4 @@ x =  matrix(nrow=10, ncol=n)
 for(i in 1:10)
   x[i,] = Euler_est(delta, 1)
 
-matplot(t, t(x[1:10,]), col=c(2:11), type = "l", main = "Euler estimation", xlab = "delta = 0.001", ylab = "")
+matplot(t, t(x[1:10,]), col=c(2:11), type = "l", main = "Euler estimation", xlab = "delta = 0.01", ylab = "")
